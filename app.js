@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -16,6 +15,8 @@ const graphqlHttp = require('express-graphql').graphqlHTTP;
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
 const authMiddleware = require('./middleware/auth');
+
+const fileUtil = require('./util/file');
 
 const app = express();
 
@@ -72,7 +73,7 @@ if(!req.isAuth) {
     return res.status(200).json({message: 'No file provided!'});
   }
   if(req.body.oldPath) {
-    clearImage(req.body.oldPath);
+    fileUtil.clearImage(req.body.oldPath);
   }
 
   return res.status(201).json({message: 'File stored!', filePath: req.file.filename});
@@ -114,10 +115,3 @@ mongoose
 
   })
   .catch(err => console.log(err));
-
-
-  const clearImage = filePath => {
-    filePath = path.join(__dirname, '..', filePath);
-    fs.unlink(filePath, err => console.log(err));
-  };
-  
